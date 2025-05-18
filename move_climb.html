@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Climbing - Game Mechanics Gallery</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { background: #181a20; color: #f1f1f1; font-family: 'Segoe UI', Arial, sans-serif; margin: 0; }
+    .container { max-width: 500px; margin: 3rem auto; padding: 2rem; background: #23272f; border-radius: 18px; box-shadow: 0 4px 16px rgba(0,0,0,0.15);}
+    h1 { color: #ffcc00; }
+    a { color: #ffcc00; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .info-marker {
+      position: fixed;
+      top: 18px;
+      right: 24px;
+      background: #ffcc00;
+      color: #23272f;
+      border-radius: 50%;
+      width: 38px;
+      height: 38px;
+      font-weight: bold;
+      font-size: 1.3rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+      z-index: 10;
+    }
+    .info-popup {
+      display: none;
+      position: fixed;
+      top: 68px;
+      right: 24px;
+      background: #23272f;
+      color: #f1f1f1;
+      padding: 1rem 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+      width: 300px;
+      max-width: 90vw;
+      z-index: 11;
+    }
+    .info-popup.active { display: block; }
+    .play-area {
+      background: #313645;
+      border-radius: 12px;
+      width: 350px;
+      height: 220px;
+      margin: 0 auto 1.5rem auto;
+      position: relative;
+      overflow: hidden;
+      border: 2px solid #252830;
+    }
+    .ladder {
+      position: absolute;
+      left: 160px;
+      bottom: 0;
+      width: 30px;
+      height: 180px;
+      background: repeating-linear-gradient(
+        to bottom, #ffe066, #ffe066 6px, #bfa630 6px, #bfa630 12px
+      );
+      border-radius: 8px;
+      z-index: 1;
+      box-shadow: 0 2px 8px #23272f44;
+    }
+    .player {
+      position: absolute;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: #ffcc00;
+      color: #23272f;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 1.1rem;
+      left: 157px;
+      bottom: 16px;
+      z-index: 2;
+      box-shadow: 0 2px 8px #23272f77;
+      transition: bottom 0.12s cubic-bezier(.34,1.56,.64,1);
+    }
+    .instructions {
+      text-align: center;
+      margin-bottom: 1.2rem;
+      font-size: 1rem;
+      color: #ffe066;
+    }
+  </style>
+</head>
+<body>
+  <a href="index.html" style="position:absolute; left:32px; top:24px; color:#ffcc00;">&larr; Back</a>
+  <div class="info-marker" onclick="toggleInfo()">i</div>
+  <div class="info-popup" id="infoPopup">
+    <strong>Climbing</strong><br>
+    Climbing lets players move vertically along ladders, vines, or walls to reach new areas or avoid hazards.<br><br>
+    <ul style="margin:0 0 0 1em;">
+      <li>Vertical traversal</li>
+      <li>Accessing higher platforms</li>
+      <li>Environmental puzzles</li>
+    </ul>
+    <em>Examples: Donkey Kong, Celeste, Tomb Raider</em>
+  </div>
+  <div class="container">
+    <h1>Climbing</h1>
+    <div class="instructions">
+      Use <b>Up/Down Arrow</b> or <b>W/S</b> to climb the ladder!
+    </div>
+    <div class="play-area" id="playArea">
+      <div class="ladder"></div>
+      <div class="player" id="player">P</div>
+    </div>
+  </div>
+  <script>
+    const player = document.getElementById('player');
+    const minY = 16;
+    const maxY = 180;
+    let y = minY;
+
+    function renderPlayer() {
+      player.style.bottom = y + 'px';
+    }
+    function climb(dy) {
+      y += dy;
+      if (y < minY) y = minY;
+      if (y > maxY) y = maxY;
+      renderPlayer();
+    }
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') {
+        climb(18);
+      }
+      if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') {
+        climb(-18);
+      }
+    });
+    renderPlayer();
+
+    function toggleInfo() {
+      document.getElementById('infoPopup').classList.toggle('active');
+    }
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('.info-marker') && !e.target.closest('.info-popup')) {
+        document.getElementById('infoPopup').classList.remove('active');
+      }
+    });
+  </script>
+</body>
+</html>

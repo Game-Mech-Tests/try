@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Enemy Spawners - Game Mechanics Gallery</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body {
+      background: #181a20;
+      color: #f1f1f1;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      margin: 0;
+    }
+    .container {
+      max-width: 500px;
+      margin: 3rem auto;
+      padding: 2rem;
+      background: #23272f;
+      border-radius: 18px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+      text-align: center;
+    }
+    h1 {
+      color: #ffcc00;
+    }
+    a {
+      color: #ffcc00;
+      text-decoration: none;
+      position: absolute;
+      left: 32px;
+      top: 24px;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    .info-marker {
+      position: fixed;
+      top: 18px;
+      right: 24px;
+      background: #ffcc00;
+      color: #23272f;
+      border-radius: 50%;
+      width: 38px;
+      height: 38px;
+      font-weight: bold;
+      font-size: 1.3rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+      z-index: 10;
+    }
+    .info-popup {
+      display: none;
+      position: fixed;
+      top: 68px;
+      right: 24px;
+      background: #23272f;
+      color: #f1f1f1;
+      padding: 1rem 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+      width: 300px;
+      max-width: 90vw;
+      z-index: 11;
+      text-align: left;
+    }
+    .info-popup.active {
+      display: block;
+    }
+    .play-area {
+      background: #313645;
+      border-radius: 12px;
+      width: 350px;
+      height: 220px;
+      margin: 1.5rem auto 0 auto;
+      position: relative;
+      overflow: hidden;
+      border: 2px solid #252830;
+      user-select: none;
+    }
+    .spawner {
+      position: absolute;
+      width: 36px;
+      height: 36px;
+      background: #ffcc00;
+      border-radius: 50%;
+      top: 10px;
+      left: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      color: #23272f;
+      cursor: pointer;
+      box-shadow: 0 2px 8px #23272f77;
+      user-select: none;
+      transition: background 0.2s;
+    }
+    .spawner:hover {
+      background: #ffe066;
+    }
+    .enemy {
+      position: absolute;
+      width: 36px;
+      height: 36px;
+      background: #ff6666;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      color: #23272f;
+      user-select: none;
+      transition: opacity 0.3s ease;
+    }
+    .enemy.dead {
+      opacity: 0.3;
+    }
+    .instructions {
+      color: #ffe066;
+      font-size: 1rem;
+      margin-top: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <a href="index.html">&larr; Back</a>
+  <div class="info-marker" onclick="toggleInfo()">i</div>
+  <div class="info-popup" id="infoPopup">
+    <strong>Enemy Spawners</strong><br />
+    Enemy spawners generate enemies periodically or when triggered, creating dynamic challenges.<br /><br />
+    <ul style="margin: 0 0 0 1em;">
+      <li>Timed or triggered spawning</li>
+      <li>Spawn limits and waves</li>
+      <li>Dynamic difficulty</li>
+    </ul>
+    <em>Examples: Left 4 Dead, Diablo, Tower Defense games</em>
+  </div>
+  <div class="container">
+    <h1>Enemy Spawners</h1>
+    <div class="play-area" id="playArea">
+      <div class="spawner" id="spawner" title="Click to spawn enemy">S</div>
+    </div>
+    <div class="instructions">
+      Click the spawner to spawn enemies. Click an enemy to defeat it.
+    </div>
+  </div>
+  <script>
+    const playArea = document.getElementById('playArea');
+    const spawner = document.getElementById('spawner');
+    let enemies = [];
+    let enemyCount = 0;
+    const maxEnemies = 5;
+
+    spawner.addEventListener('click', () => {
+      if (enemies.length >= maxEnemies) {
+        alert('Maximum enemies spawned!');
+        return;
+      }
+      spawnEnemy();
+    });
+
+    function spawnEnemy() {
+      const enemy = document.createElement('div');
+      enemy.className = 'enemy';
+      enemy.textContent = 'E';
+      // Random position inside play area
+      const x = Math.random() * (playArea.clientWidth - 36);
+      const y = Math.random() * (playArea.clientHeight - 36);
+      enemy.style.left = x + 'px';
+      enemy.style.top = y + 'px';
+      enemy.addEventListener('click', () => {
+        enemy.classList.add('dead');
+        setTimeout(() => {
+          playArea.removeChild(enemy);
+          enemies = enemies.filter(e => e !== enemy);
+        }, 500);
+      });
+      playArea.appendChild(enemy);
+      enemies.push(enemy);
+    }
+
+    function toggleInfo() {
+      document.getElementById('infoPopup').classList.toggle('active');
+    }
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.info-marker') && !e.target.closest('.info-popup')) {
+        document.getElementById('infoPopup').classList.remove('active');
+      }
+    });
+  </script>
+</body>
+</html>

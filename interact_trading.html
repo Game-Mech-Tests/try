@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Trading - Game Mechanics Gallery</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { background: #181a20; color: #f1f1f1; font-family: 'Segoe UI', Arial, sans-serif; margin: 0; }
+    .container { max-width: 500px; margin: 3rem auto; padding: 2rem; background: #23272f; border-radius: 18px; box-shadow: 0 4px 16px rgba(0,0,0,0.15);}
+    h1 { color: #ffcc00; }
+    a { color: #ffcc00; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .info-marker {
+      position: fixed;
+      top: 18px;
+      right: 24px;
+      background: #ffcc00;
+      color: #23272f;
+      border-radius: 50%;
+      width: 38px;
+      height: 38px;
+      font-weight: bold;
+      font-size: 1.3rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+      z-index: 10;
+    }
+    .info-popup {
+      display: none;
+      position: fixed;
+      top: 68px;
+      right: 24px;
+      background: #23272f;
+      color: #f1f1f1;
+      padding: 1rem 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+      width: 300px;
+      max-width: 90vw;
+      z-index: 11;
+    }
+    .info-popup.active { display: block; }
+    .trade-area {
+      background: #313645;
+      border-radius: 12px;
+      padding: 2rem 1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2rem;
+      margin-bottom: 1.5rem;
+    }
+    .trade-row {
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+      margin-bottom: 1rem;
+    }
+    .item {
+      background: #ffcc00;
+      color: #23272f;
+      border-radius: 6px;
+      padding: 0.5rem 1rem;
+      font-weight: bold;
+      font-size: 1rem;
+      min-width: 60px;
+      text-align: center;
+    }
+    .trade-btn {
+      background: #7ecfff;
+      color: #23272f;
+      border: none;
+      border-radius: 6px;
+      padding: 0.6rem 1.2rem;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .trade-btn:hover { background: #b3e6ff; }
+    .label {
+      margin-top: 0.8rem;
+      color: #ffe066;
+      font-size: 1rem;
+      text-align: center;
+    }
+    .result {
+      margin-top: 1.2rem;
+      color: #7ecfff;
+      font-size: 1.1rem;
+      font-weight: bold;
+      min-height: 1.5em;
+    }
+  </style>
+</head>
+<body>
+  <a href="index.html" style="position:absolute; left:32px; top:24px; color:#ffcc00;">&larr; Back</a>
+  <div class="info-marker" onclick="toggleInfo()">i</div>
+  <div class="info-popup" id="infoPopup">
+    <strong>Trading</strong><br>
+    Trading allows players to exchange items or currency with NPCs or other players, often to obtain better equipment or rare resources.<br><br>
+    <ul style="margin:0 0 0 1em;">
+      <li>Bartering or currency-based</li>
+      <li>Item value and rarity</li>
+      <li>Economy systems</li>
+    </ul>
+    <em>Examples: Animal Crossing, Stardew Valley, Diablo</em>
+  </div>
+  <div class="container">
+    <h1>Trading</h1>
+    <div class="trade-area">
+      <div class="trade-row">
+        <div class="item">Apple</div>
+        <span>for</span>
+        <div class="item">Potion</div>
+        <button class="trade-btn" onclick="trade('Apple','Potion')">Trade</button>
+      </div>
+      <div class="trade-row">
+        <div class="item">Gem</div>
+        <span>for</span>
+        <div class="item">Sword</div>
+        <button class="trade-btn" onclick="trade('Gem','Sword')">Trade</button>
+      </div>
+      <div class="result" id="tradeResult"></div>
+    </div>
+    <div class="label">Click a trade to exchange your item for another!</div>
+  </div>
+  <script>
+    let playerInventory = ['Apple', 'Gem'];
+    function trade(give, receive) {
+      const result = document.getElementById('tradeResult');
+      if (playerInventory.includes(give)) {
+        playerInventory = playerInventory.filter(i => i !== give);
+        playerInventory.push(receive);
+        result.textContent = `Trade successful! You now have: ${playerInventory.join(', ')}`;
+      } else {
+        result.textContent = `You don't have a ${give} to trade!`;
+      }
+    }
+    function toggleInfo() {
+      document.getElementById('infoPopup').classList.toggle('active');
+    }
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('.info-marker') && !e.target.closest('.info-popup')) {
+        document.getElementById('infoPopup').classList.remove('active');
+      }
+    });
+  </script>
+</body>
+</html>

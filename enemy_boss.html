@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>JRPG Boss Fight - Game Mechanics Gallery</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body {
+      background: #181a20;
+      color: #f1f1f1;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      margin: 0;
+    }
+    .container {
+      max-width: 500px;
+      margin: 3rem auto;
+      padding: 2rem;
+      background: #23272f;
+      border-radius: 18px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+      text-align: center;
+    }
+    h1 { color: #ffcc00; }
+    a {
+      color: #ffcc00;
+      text-decoration: none;
+      position: absolute;
+      left: 32px;
+      top: 24px;
+    }
+    a:hover { text-decoration: underline; }
+    .info-marker {
+      position: fixed;
+      top: 18px;
+      right: 24px;
+      background: #ffcc00;
+      color: #23272f;
+      border-radius: 50%;
+      width: 38px;
+      height: 38px;
+      font-weight: bold;
+      font-size: 1.3rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+      z-index: 10;
+    }
+    .info-popup {
+      display: none;
+      position: fixed;
+      top: 68px;
+      right: 24px;
+      background: #23272f;
+      color: #f1f1f1;
+      padding: 1rem 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+      width: 300px;
+      max-width: 90vw;
+      z-index: 11;
+      text-align: left;
+    }
+    .info-popup.active { display: block; }
+    .battle-area {
+      background: #313645;
+      border-radius: 12px;
+      padding: 2rem 1rem 1rem 1rem;
+      margin-top: 1.5rem;
+      position: relative;
+      user-select: none;
+    }
+    .health-bar, .boss-bar {
+      background: #555;
+      border-radius: 12px;
+      height: 24px;
+      width: 100%;
+      margin-bottom: 1rem;
+      overflow: hidden;
+      box-shadow: inset 0 0 6px #222;
+      position: relative;
+    }
+    .health-fill {
+      background: #7ecfff;
+      height: 100%;
+      border-radius: 12px 0 0 12px;
+      transition: width 0.3s ease;
+      position: absolute;
+      left: 0; top: 0;
+    }
+    .boss-fill {
+      background: #ff6666;
+      height: 100%;
+      border-radius: 12px 0 0 12px;
+      transition: width 0.3s ease;
+      position: absolute;
+      left: 0; top: 0;
+    }
+    .label {
+      position: absolute;
+      left: 12px;
+      top: 2px;
+      font-size: 0.95em;
+      color: #fff;
+      opacity: 0.8;
+      z-index: 2;
+    }
+    .boss {
+      width: 80px;
+      height: 80px;
+      background: #ff6666;
+      border-radius: 50%;
+      margin: 0 auto 1rem auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 2rem;
+      color: #23272f;
+      box-shadow: 0 0 12px #ff6666aa;
+      user-select: none;
+      border: 4px solid #ffcc00;
+      position: relative;
+    }
+    .player-icon {
+      width: 60px;
+      height: 60px;
+      background: #7ecfff;
+      border-radius: 50%;
+      margin: 0 auto 1rem auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 1.5rem;
+      color: #23272f;
+      box-shadow: 0 0 8px #7ecfff77;
+      user-select: none;
+      border: 3px solid #ffcc00;
+      position: relative;
+    }
+    .actions {
+      margin: 1.2rem 0 0.5rem 0;
+      display: flex;
+      justify-content: center;
+      gap: 1.2rem;
+    }
+    .action-btn {
+      background: #ffcc00;
+      color: #23272f;
+      border: none;
+      border-radius: 8px;
+      padding: 0.7rem 1.2rem;
+      font-size: 1.05rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.15s;
+      min-width: 90px;
+    }
+    .action-btn:disabled {
+      background: #bfbfbf;
+      color: #888;
+      cursor: not-allowed;
+    }
+    .action-btn:hover:not(:disabled) { background: #ffe066; }
+    .log {
+      background: #252830;
+      border-radius: 8px;
+      margin: 1.2rem 0 0 0;
+      padding: 0.9rem 1rem;
+      font-size: 1rem;
+      min-height: 70px;
+      max-height: 110px;
+      overflow-y: auto;
+      text-align: left;
+      color: #ffe066;
+      box-shadow: 0 2px 8px #23272f44;
+    }
+    .status {
+      margin-top: 1rem;
+      font-size: 1.1rem;
+      color: #7ecfff;
+      min-height: 1.5em;
+      font-weight: bold;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <a href="index.html">&larr; Back</a>
+  <div class="info-marker" onclick="toggleInfo()">i</div>
+  <div class="info-popup" id="infoPopup">
+    <strong>JRPG Boss Fight</strong><br />
+    A turn-based boss fight where you choose actions and the boss responds with unique attacks.<br /><br />
+    <ul style="margin: 0 0 0 1em;">
+      <li>Attack, Defend, Heal actions</li>
+      <li>Turn-based combat</li>
+      <li>Action log and HP bars</li>
+    </ul>
+    <em>Inspired by: Final Fantasy, Dragon Quest, Pokémon</em>
+  </div>
+  <div class="container">
+    <h1>JRPG Boss Fight</h1>
+    <div class="battle-area">
+      <div class="boss-bar">
+        <span class="label">Boss HP</span>
+        <div class="boss-fill" id="bossFill"></div>
+      </div>
+      <div class="boss" id="boss">B</div>
+      <div class="player-icon" id="playerIcon">P</div>
+      <div class="health-bar">
+        <span class="label">Player HP</span>
+        <div class="health-fill" id="playerFill"></div>
+      </div>
+      <div class="actions">
+        <button class="action-btn" id="attackBtn">Attack</button>
+        <button class="action-btn" id="defendBtn">Defend</button>
+        <button class="action-btn" id="healBtn">Heal</button>
+      </div>
+      <div class="status" id="status"></div>
+      <div class="log" id="log"></div>
+    </div>
+  </div>
+  <script>
+    // Stats
+    let playerHP = 100, playerMaxHP = 100;
+    let bossHP = 160, bossMaxHP = 160;
+    let defending = false;
+    let turn = "player";
+    let log = [];
+
+    // DOM
+    const bossFill = document.getElementById('bossFill');
+    const playerFill = document.getElementById('playerFill');
+    const status = document.getElementById('status');
+    const logDiv = document.getElementById('log');
+    const attackBtn = document.getElementById('attackBtn');
+    const defendBtn = document.getElementById('defendBtn');
+    const healBtn = document.getElementById('healBtn');
+
+    function updateBars() {
+      bossFill.style.width = Math.max(0, bossHP) / bossMaxHP * 100 + "%";
+      playerFill.style.width = Math.max(0, playerHP) / playerMaxHP * 100 + "%";
+    }
+
+    function addLog(msg) {
+      log.push(msg);
+      if (log.length > 5) log.shift();
+      logDiv.innerHTML = log.map(line => `<div>${line}</div>`).join('');
+    }
+
+    function setButtons(state) {
+      attackBtn.disabled = !state;
+      defendBtn.disabled = !state;
+      healBtn.disabled = !state;
+    }
+
+    function playerTurn(action) {
+      if (turn !== "player" || playerHP <= 0 || bossHP <= 0) return;
+      setButtons(false);
+      if (action === "attack") {
+        const dmg = Math.floor(Math.random() * 18) + 12;
+        bossHP -= dmg;
+        addLog(`You attack the boss for <b>${dmg}</b> damage!`);
+        status.textContent = "You attacked!";
+      } else if (action === "defend") {
+        defending = true;
+        addLog("You brace for the next attack. (Defending)");
+        status.textContent = "You are defending!";
+      } else if (action === "heal") {
+        const heal = Math.floor(Math.random() * 18) + 12;
+        playerHP = Math.min(playerMaxHP, playerHP + heal);
+        addLog(`You heal yourself for <b>${heal}</b> HP.`);
+        status.textContent = "You healed!";
+      }
+      updateBars();
+      setTimeout(() => {
+        if (bossHP <= 0) {
+          status.textContent = "Victory! 🎉";
+          addLog("<b>You defeated the boss!</b>");
+          setButtons(false);
+        } else {
+          turn = "boss";
+          status.textContent = "Boss's turn...";
+          setTimeout(bossTurn, 1200);
+        }
+      }, 900);
+    }
+
+    function bossTurn() {
+      if (bossHP <= 0 || playerHP <= 0) return;
+      // Boss randomly chooses an attack
+      const attacks = [
+        { name: "Slash", dmg: [14, 22], msg: "Boss slashes you!" },
+        { name: "Fireball", dmg: [18, 28], msg: "Boss casts Fireball!" },
+        { name: "Stomp", dmg: [10, 30], msg: "Boss stomps the ground!" }
+      ];
+      const atk = attacks[Math.floor(Math.random() * attacks.length)];
+      let dmg = Math.floor(Math.random() * (atk.dmg[1] - atk.dmg[0] + 1)) + atk.dmg[0];
+      if (defending) {
+        dmg = Math.floor(dmg / 2);
+        defending = false;
+        addLog(`<b>${atk.msg}</b> You defend and take only <b>${dmg}</b> damage.`);
+      } else {
+        addLog(`<b>${atk.msg}</b> You take <b>${dmg}</b> damage.`);
+      }
+      playerHP -= dmg;
+      updateBars();
+      if (playerHP <= 0) {
+        playerHP = 0;
+        status.textContent = "Defeat... 💀";
+        addLog("<b>The boss defeated you!</b>");
+        setButtons(false);
+        return;
+      }
+      setTimeout(() => {
+        turn = "player";
+        status.textContent = "Your turn!";
+        setButtons(true);
+      }, 1200);
+    }
+
+    // Button events
+    attackBtn.onclick = () => playerTurn("attack");
+    defendBtn.onclick = () => playerTurn("defend");
+    healBtn.onclick = () => playerTurn("heal");
+
+    // Initial state
+    function startBattle() {
+      playerHP = playerMaxHP;
+      bossHP = bossMaxHP;
+      defending = false;
+      turn = "player";
+      log = [];
+      addLog("A wild Boss appears!");
+      updateBars();
+      status.textContent = "Your turn!";
+      setButtons(true);
+    }
+
+    startBattle();
+
+    function toggleInfo() {
+      document.getElementById('infoPopup').classList.toggle('active');
+    }
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.info-marker') && !e.target.closest('.info-popup')) {
+        document.getElementById('infoPopup').classList.remove('active');
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Switches & Levers - Game Mechanics Gallery</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { background: #181a20; color: #f1f1f1; font-family: 'Segoe UI', Arial, sans-serif; margin: 0; }
+    .container { max-width: 500px; margin: 3rem auto; padding: 2rem; background: #23272f; border-radius: 18px; box-shadow: 0 4px 16px rgba(0,0,0,0.15);}
+    h1 { color: #ffcc00; }
+    a { color: #ffcc00; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .info-marker {
+      position: fixed;
+      top: 18px;
+      right: 24px;
+      background: #ffcc00;
+      color: #23272f;
+      border-radius: 50%;
+      width: 38px;
+      height: 38px;
+      font-weight: bold;
+      font-size: 1.3rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+      z-index: 10;
+    }
+    .info-popup {
+      display: none;
+      position: fixed;
+      top: 68px;
+      right: 24px;
+      background: #23272f;
+      color: #f1f1f1;
+      padding: 1rem 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+      width: 300px;
+      max-width: 90vw;
+      z-index: 11;
+    }
+    .info-popup.active { display: block; }
+    .switch-area {
+      background: #313645;
+      border-radius: 12px;
+      padding: 2rem 1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2rem;
+      margin-bottom: 1.5rem;
+    }
+    .lever {
+      position: relative;
+      width: 80px;
+      height: 40px;
+      background: #252830;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      cursor: pointer;
+      transition: background 0.2s;
+      box-shadow: 0 2px 8px #23272f44;
+    }
+    .lever.on {
+      background: #ffcc00;
+      justify-content: flex-end;
+    }
+    .lever-knob {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: #7ecfff;
+      border: 2px solid #23272f;
+      transition: background 0.2s;
+      box-shadow: 0 2px 8px #23272f44;
+    }
+    .door {
+      width: 60px;
+      height: 90px;
+      background: #252830;
+      border: 4px solid #ffcc00;
+      border-radius: 8px;
+      position: relative;
+      transition: background 0.3s, border-color 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      font-weight: bold;
+      color: #ffcc00;
+    }
+    .door.open {
+      background: #7ecfff;
+      border-color: #7ecfff;
+      color: #23272f;
+    }
+    .label {
+      margin-top: 0.8rem;
+      color: #ffe066;
+      font-size: 1rem;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <a href="index.html" style="position:absolute; left:32px; top:24px; color:#ffcc00;">&larr; Back</a>
+  <div class="info-marker" onclick="toggleInfo()">i</div>
+  <div class="info-popup" id="infoPopup">
+    <strong>Switches & Levers</strong><br>
+    Switches and levers allow players to interact with the environment, opening doors, activating platforms, or triggering events.<br><br>
+    <ul style="margin:0 0 0 1em;">
+      <li>Environmental interaction</li>
+      <li>Puzzle elements</li>
+      <li>Triggering mechanisms</li>
+    </ul>
+    <em>Examples: Zelda, Portal, Super Mario Bros.</em>
+  </div>
+  <div class="container">
+    <h1>Switches & Levers</h1>
+    <div class="switch-area">
+      <div class="lever" id="lever" onclick="toggleLever()">
+        <div class="lever-knob"></div>
+      </div>
+      <div class="door" id="door">Closed</div>
+    </div>
+    <div class="label">Click the lever to open or close the door!</div>
+  </div>
+  <script>
+    let isOn = false;
+    function toggleLever() {
+      isOn = !isOn;
+      const lever = document.getElementById('lever');
+      const door = document.getElementById('door');
+      if (isOn) {
+        lever.classList.add('on');
+        door.classList.add('open');
+        door.textContent = "Open";
+      } else {
+        lever.classList.remove('on');
+        door.classList.remove('open');
+        door.textContent = "Closed";
+      }
+    }
+    function toggleInfo() {
+      document.getElementById('infoPopup').classList.toggle('active');
+    }
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('.info-marker') && !e.target.closest('.info-popup')) {
+        document.getElementById('infoPopup').classList.remove('active');
+      }
+    });
+  </script>
+</body>
+</html>

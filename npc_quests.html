@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Quest Givers - Game Mechanics Gallery</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { background: #181a20; color: #f1f1f1; font-family: 'Segoe UI', Arial, sans-serif; margin: 0; }
+    .container { max-width: 500px; margin: 3rem auto; padding: 2rem; background: #23272f; border-radius: 18px; box-shadow: 0 4px 16px rgba(0,0,0,0.15);}
+    h1 { color: #ffcc00; }
+    a { color: #ffcc00; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .info-marker {
+      position: fixed;
+      top: 18px;
+      right: 24px;
+      background: #ffcc00;
+      color: #23272f;
+      border-radius: 50%;
+      width: 38px;
+      height: 38px;
+      font-weight: bold;
+      font-size: 1.3rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+      z-index: 10;
+    }
+    .info-popup {
+      display: none;
+      position: fixed;
+      top: 68px;
+      right: 24px;
+      background: #23272f;
+      color: #f1f1f1;
+      padding: 1rem 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+      width: 300px;
+      max-width: 90vw;
+      z-index: 11;
+    }
+    .info-popup.active { display: block; }
+    .quest-box {
+      background: #313645;
+      border-radius: 10px;
+      padding: 1.2rem;
+      margin-bottom: 1rem;
+      font-size: 1.1rem;
+    }
+    .quest-btn {
+      background: #ffcc00;
+      color: #23272f;
+      border: none;
+      border-radius: 6px;
+      padding: 0.6rem 1.2rem;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      margin-right: 1rem;
+      transition: background 0.15s;
+    }
+    .quest-btn:hover { background: #ffe066; }
+    .quest-log {
+      background: #252830;
+      border-radius: 8px;
+      padding: 0.8rem 1rem;
+      margin-top: 1.2rem;
+      font-size: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <a href="index.html" style="position:absolute; left:32px; top:24px; color:#ffcc00;">&larr; Back</a>
+  <div class="info-marker" onclick="toggleInfo()">i</div>
+  <div class="info-popup" id="infoPopup">
+    <strong>Quest Givers</strong><br>
+    Quest givers are NPCs that assign tasks, missions, or objectives to the player. Completing these quests often rewards the player with items, experience, or story progression.<br><br>
+    <ul style="margin:0 0 0 1em;">
+      <li>Main and side quests</li>
+      <li>Quest tracking and journals</li>
+      <li>Reward systems</li>
+    </ul>
+    <em>Examples: Skyrim, World of Warcraft, The Legend of Zelda</em>
+  </div>
+  <div class="container">
+    <h1>Quest Givers</h1>
+    <div class="quest-box" id="npc">
+      <strong>Blacksmith:</strong> "I need 3 iron ores. Can you bring them to me?"
+      <br><br>
+      <button class="quest-btn" onclick="acceptQuest()" id="acceptBtn">Accept Quest</button>
+      <button class="quest-btn" onclick="declineQuest()" id="declineBtn">Decline</button>
+    </div>
+    <div class="quest-log" id="questLog">
+      <strong>Quest Log:</strong> No active quest.
+    </div>
+    <div style="margin-top:1.2rem;">
+      <button class="quest-btn" onclick="collectOre()" id="collectBtn" style="display:none;">Collect Iron Ore</button>
+      <button class="quest-btn" onclick="turnInQuest()" id="turnInBtn" style="display:none;">Turn In Quest</button>
+    </div>
+  </div>
+  <script>
+    let questAccepted = false;
+    let oreCount = 0;
+    function acceptQuest() {
+      questAccepted = true;
+      oreCount = 0;
+      document.getElementById('questLog').innerHTML = "<strong>Quest Log:</strong> Collect 3 iron ores for the Blacksmith. (0/3)";
+      document.getElementById('collectBtn').style.display = '';
+      document.getElementById('acceptBtn').style.display = 'none';
+      document.getElementById('declineBtn').style.display = 'none';
+    }
+    function declineQuest() {
+      questAccepted = false;
+      document.getElementById('questLog').innerHTML = "<strong>Quest Log:</strong> No active quest.";
+      document.getElementById('acceptBtn').style.display = 'none';
+      document.getElementById('declineBtn').style.display = 'none';
+      document.getElementById('npc').innerHTML = '<strong>Blacksmith:</strong> "Maybe another time, then."';
+    }
+    function collectOre() {
+      if (questAccepted && oreCount < 3) {
+        oreCount++;
+        document.getElementById('questLog').innerHTML = `<strong>Quest Log:</strong> Collect 3 iron ores for the Blacksmith. (${oreCount}/3)`;
+        if (oreCount === 3) {
+          document.getElementById('collectBtn').style.display = 'none';
+          document.getElementById('turnInBtn').style.display = '';
+        }
+      }
+    }
+    function turnInQuest() {
+      document.getElementById('questLog').innerHTML = "<strong>Quest Log:</strong> Quest Complete! You received 100 gold.";
+      document.getElementById('turnInBtn').style.display = 'none';
+      document.getElementById('npc').innerHTML = '<strong>Blacksmith:</strong> "Thank you, hero! Here is your reward."';
+    }
+    function toggleInfo() {
+      document.getElementById('infoPopup').classList.toggle('active');
+    }
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('.info-marker') && !e.target.closest('.info-popup')) {
+        document.getElementById('infoPopup').classList.remove('active');
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Companion AI - Game Mechanics Gallery</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { background: #181a20; color: #f1f1f1; font-family: 'Segoe UI', Arial, sans-serif; margin: 0; }
+    .container { max-width: 500px; margin: 3rem auto; padding: 2rem; background: #23272f; border-radius: 18px; box-shadow: 0 4px 16px rgba(0,0,0,0.15);}
+    h1 { color: #ffcc00; }
+    a { color: #ffcc00; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .info-marker {
+      position: fixed;
+      top: 18px;
+      right: 24px;
+      background: #ffcc00;
+      color: #23272f;
+      border-radius: 50%;
+      width: 38px;
+      height: 38px;
+      font-weight: bold;
+      font-size: 1.3rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+      z-index: 10;
+    }
+    .info-popup {
+      display: none;
+      position: fixed;
+      top: 68px;
+      right: 24px;
+      background: #23272f;
+      color: #f1f1f1;
+      padding: 1rem 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+      width: 300px;
+      max-width: 90vw;
+      z-index: 11;
+    }
+    .info-popup.active { display: block; }
+    .play-area {
+      background: #313645;
+      border-radius: 12px;
+      width: 350px;
+      height: 220px;
+      margin: 0 auto 1.5rem auto;
+      position: relative;
+      overflow: hidden;
+      border: 2px solid #252830;
+    }
+    .player, .companion {
+      position: absolute;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 1.1rem;
+    }
+    .player {
+      background: #ffcc00;
+      color: #23272f;
+      z-index: 2;
+    }
+    .companion {
+      background: #7ecfff;
+      color: #23272f;
+      z-index: 1;
+      transition: left 0.18s, top 0.18s;
+    }
+    .instructions {
+      text-align: center;
+      margin-bottom: 1.2rem;
+      font-size: 1rem;
+      color: #ffe066;
+    }
+  </style>
+</head>
+<body>
+  <a href="index.html" style="position:absolute; left:32px; top:24px; color:#ffcc00;">&larr; Back</a>
+  <div class="info-marker" onclick="toggleInfo()">i</div>
+  <div class="info-popup" id="infoPopup">
+    <strong>Companion AI</strong><br>
+    Companion AI mechanics allow NPCs to follow, assist, or fight alongside the player. These companions can provide support, carry items, or participate in story events.<br><br>
+    <ul style="margin:0 0 0 1em;">
+      <li>Pathfinding and following behavior</li>
+      <li>Combat assistance</li>
+      <li>Unique dialogue and personalities</li>
+    </ul>
+    <em>Examples: Ellie in The Last of Us, Dogmeat in Fallout 4, Elizabeth in BioShock Infinite</em>
+  </div>
+  <div class="container">
+    <h1>Companion AI</h1>
+    <div class="instructions">
+      Use arrow keys or WASD to move the <span style="color:#ffcc00;">player</span>. The <span style="color:#7ecfff;">companion</span> will follow!
+    </div>
+    <div class="play-area" id="playArea">
+      <div class="player" id="player" style="left: 50px; top: 90px;">P</div>
+      <div class="companion" id="companion" style="left: 10px; top: 10px;">C</div>
+    </div>
+  </div>
+  <script>
+    // Player and companion positions
+    let playerPos = { x: 50, y: 90 };
+    let companionPos = { x: 10, y: 10 };
+    const step = 24;
+    const areaW = 350, areaH = 220, objSize = 36;
+
+    function updatePositions() {
+      const player = document.getElementById('player');
+      const companion = document.getElementById('companion');
+      player.style.left = playerPos.x + 'px';
+      player.style.top = playerPos.y + 'px';
+      companion.style.left = companionPos.x + 'px';
+      companion.style.top = companionPos.y + 'px';
+    }
+
+    function movePlayer(dx, dy) {
+      playerPos.x = Math.max(0, Math.min(areaW - objSize, playerPos.x + dx));
+      playerPos.y = Math.max(0, Math.min(areaH - objSize, playerPos.y + dy));
+      updatePositions();
+      moveCompanion();
+    }
+
+    // Simple follow AI: move companion toward player
+    function moveCompanion() {
+      const dx = playerPos.x - companionPos.x;
+      const dy = playerPos.y - companionPos.y;
+      if (Math.abs(dx) > step) companionPos.x += step * Math.sign(dx);
+      else companionPos.x = playerPos.x;
+      if (Math.abs(dy) > step) companionPos.y += step * Math.sign(dy);
+      else companionPos.y = playerPos.y;
+      updatePositions();
+    }
+
+    document.addEventListener('keydown', function(e) {
+      if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','w','a','s','d'].includes(e.key)) {
+        e.preventDefault();
+        if (e.key === 'ArrowUp' || e.key === 'w') movePlayer(0, -step);
+        if (e.key === 'ArrowDown' || e.key === 's') movePlayer(0, step);
+        if (e.key === 'ArrowLeft' || e.key === 'a') movePlayer(-step, 0);
+        if (e.key === 'ArrowRight' || e.key === 'd') movePlayer(step, 0);
+      }
+    });
+
+    updatePositions();
+
+    function toggleInfo() {
+      document.getElementById('infoPopup').classList.toggle('active');
+    }
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('.info-marker') && !e.target.closest('.info-popup')) {
+        document.getElementById('infoPopup').classList.remove('active');
+      }
+    });
+  </script>
+</body>
+</html>

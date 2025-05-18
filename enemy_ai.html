@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Enemy AI - Game Mechanics Gallery</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body {
+      background: #181a20;
+      color: #f1f1f1;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      margin: 0;
+    }
+    .container {
+      max-width: 500px;
+      margin: 3rem auto;
+      padding: 2rem;
+      background: #23272f;
+      border-radius: 18px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+      text-align: center;
+    }
+    h1 {
+      color: #ffcc00;
+    }
+    a {
+      color: #ffcc00;
+      text-decoration: none;
+      position: absolute;
+      left: 32px;
+      top: 24px;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    .info-marker {
+      position: fixed;
+      top: 18px;
+      right: 24px;
+      background: #ffcc00;
+      color: #23272f;
+      border-radius: 50%;
+      width: 38px;
+      height: 38px;
+      font-weight: bold;
+      font-size: 1.3rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+      z-index: 10;
+    }
+    .info-popup {
+      display: none;
+      position: fixed;
+      top: 68px;
+      right: 24px;
+      background: #23272f;
+      color: #f1f1f1;
+      padding: 1rem 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+      width: 300px;
+      max-width: 90vw;
+      z-index: 11;
+      text-align: left;
+    }
+    .info-popup.active {
+      display: block;
+    }
+    .play-area {
+      background: #313645;
+      border-radius: 12px;
+      width: 350px;
+      height: 220px;
+      margin: 1.5rem auto 0 auto;
+      position: relative;
+      overflow: hidden;
+      border: 2px solid #252830;
+    }
+    .player,
+    .enemy {
+      position: absolute;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 1.1rem;
+      user-select: none;
+    }
+    .player {
+      background: #ffcc00;
+      color: #23272f;
+      left: 20px;
+      bottom: 20px;
+      z-index: 2;
+    }
+    .enemy {
+      background: #ff6666;
+      color: #23272f;
+      right: 20px;
+      top: 20px;
+      z-index: 2;
+      transition: left 0.3s ease, top 0.3s ease;
+    }
+    .instructions {
+      color: #ffe066;
+      font-size: 1rem;
+      margin-top: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <a href="index.html">&larr; Back</a>
+  <div class="info-marker" onclick="toggleInfo()">i</div>
+  <div class="info-popup" id="infoPopup">
+    <strong>Enemy AI</strong><br />
+    Enemy AI controls enemy behavior, such as chasing the player, attacking, or patrolling.<br /><br />
+    <ul style="margin: 0 0 0 1em;">
+      <li>Chasing and evading</li>
+      <li>Attack patterns</li>
+      <li>Patrolling and awareness</li>
+    </ul>
+    <em>Examples: Dark Souls, Hollow Knight, Resident Evil</em>
+  </div>
+  <div class="container">
+    <h1>Enemy AI</h1>
+    <div class="play-area" id="playArea">
+      <div class="player" id="player">P</div>
+      <div class="enemy" id="enemy">E</div>
+    </div>
+    <div class="instructions">
+      Use arrow keys or WASD to move the player. The enemy will chase you!
+    </div>
+  </div>
+  <script>
+    const playArea = document.getElementById('playArea');
+    const player = document.getElementById('player');
+    const enemy = document.getElementById('enemy');
+    const areaWidth = 350;
+    const areaHeight = 220;
+    const objSize = 36;
+
+    let playerPos = { x: 20, y: 20 };
+    let enemyPos = { x: areaWidth - objSize - 20, y: areaHeight - objSize - 20 };
+
+    function updatePositions() {
+      player.style.left = playerPos.x + 'px';
+      player.style.bottom = playerPos.y + 'px';
+      enemy.style.left = enemyPos.x + 'px';
+      enemy.style.top = enemyPos.y + 'px';
+    }
+
+    function movePlayer(dx, dy) {
+      playerPos.x = Math.min(Math.max(0, playerPos.x + dx), areaWidth - objSize);
+      playerPos.y = Math.min(Math.max(0, playerPos.y + dy), areaHeight - objSize);
+      updatePositions();
+      moveEnemy();
+    }
+
+    // Simple enemy AI: move towards player step by step
+    function moveEnemy() {
+      const speed = 3;
+      const dx = playerPos.x - enemyPos.x;
+      const dy = (areaHeight - objSize - playerPos.y) - enemyPos.y; // invert y axis for enemy top position
+
+      if (Math.abs(dx) > speed) enemyPos.x += speed * Math.sign(dx);
+      else enemyPos.x = playerPos.x;
+
+      if (Math.abs(dy) > speed) enemyPos.y += speed * Math.sign(dy);
+      else enemyPos.y = areaHeight - objSize - playerPos.y;
+
+      updatePositions();
+    }
+
+    document.addEventListener('keydown', (e) => {
+      const step = 10;
+      switch (e.key) {
+        case 'ArrowLeft':
+        case 'a':
+        case 'A':
+          movePlayer(-step, 0);
+          break;
+        case 'ArrowRight':
+        case 'd':
+        case 'D':
+          movePlayer(step, 0);
+          break;
+        case 'ArrowUp':
+        case 'w':
+        case 'W':
+          movePlayer(0, step);
+          break;
+        case 'ArrowDown':
+        case 's':
+        case 'S':
+          movePlayer(0, -step);
+          break;
+      }
+    });
+
+    updatePositions();
+
+    function toggleInfo() {
+      document.getElementById('infoPopup').classList.toggle('active');
+    }
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.info-marker') && !e.target.closest('.info-popup')) {
+        document.getElementById('infoPopup').classList.remove('active');
+      }
+    });
+  </script>
+</body>
+</html>

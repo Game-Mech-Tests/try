@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashing - Game Mechanics Gallery</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { background: #181a20; color: #f1f1f1; font-family: 'Segoe UI', Arial, sans-serif; margin: 0; }
+    .container { max-width: 500px; margin: 3rem auto; padding: 2rem; background: #23272f; border-radius: 18px; box-shadow: 0 4px 16px rgba(0,0,0,0.15);}
+    h1 { color: #ffcc00; }
+    a { color: #ffcc00; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .info-marker {
+      position: fixed;
+      top: 18px;
+      right: 24px;
+      background: #ffcc00;
+      color: #23272f;
+      border-radius: 50%;
+      width: 38px;
+      height: 38px;
+      font-weight: bold;
+      font-size: 1.3rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+      z-index: 10;
+    }
+    .info-popup {
+      display: none;
+      position: fixed;
+      top: 68px;
+      right: 24px;
+      background: #23272f;
+      color: #f1f1f1;
+      padding: 1rem 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+      width: 300px;
+      max-width: 90vw;
+      z-index: 11;
+    }
+    .info-popup.active { display: block; }
+    .play-area {
+      background: #313645;
+      border-radius: 12px;
+      width: 350px;
+      height: 110px;
+      margin: 0 auto 1.5rem auto;
+      position: relative;
+      overflow: hidden;
+      border: 2px solid #252830;
+    }
+    .player {
+      position: absolute;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: #ffcc00;
+      color: #23272f;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 1.1rem;
+      left: 16px;
+      top: 37px;
+      z-index: 2;
+      transition: left 0.13s cubic-bezier(.34,1.56,.64,1), box-shadow 0.2s;
+      box-shadow: 0 2px 8px #23272f77;
+    }
+    .instructions {
+      text-align: center;
+      margin-bottom: 1.2rem;
+      font-size: 1rem;
+      color: #ffe066;
+    }
+  </style>
+</head>
+<body>
+  <a href="index.html" style="position:absolute; left:32px; top:24px; color:#ffcc00;">&larr; Back</a>
+  <div class="info-marker" onclick="toggleInfo()">i</div>
+  <div class="info-popup" id="infoPopup">
+    <strong>Dashing</strong><br>
+    Dashing lets players move quickly in a direction for a short burst, often to dodge attacks or cross gaps.<br><br>
+    <ul style="margin:0 0 0 1em;">
+      <li>Quick, short movement bursts</li>
+      <li>Evading hazards or attacks</li>
+      <li>Timing and cooldowns</li>
+    </ul>
+    <em>Examples: Celeste, Dead Cells, Hades</em>
+  </div>
+  <div class="container">
+    <h1>Dashing</h1>
+    <div class="instructions">
+      Press <b>Right Arrow</b> or <b>D</b> to dash right!<br>
+      (Cooldown: 1s)
+    </div>
+    <div class="play-area" id="playArea">
+      <div class="player" id="player">P</div>
+    </div>
+  </div>
+  <script>
+    const player = document.getElementById('player');
+    const areaWidth = 350;
+    const playerSize = 36;
+    let x = 16;
+    let cooldown = false;
+
+    function renderPlayer() {
+      player.style.left = x + 'px';
+    }
+    function dash() {
+      if (!cooldown) {
+        x += 80;
+        if (x > areaWidth - playerSize) x = areaWidth - playerSize;
+        renderPlayer();
+        cooldown = true;
+        setTimeout(() => { cooldown = false; }, 1000);
+      }
+    }
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') {
+        dash();
+      }
+    });
+    renderPlayer();
+
+    function toggleInfo() {
+      document.getElementById('infoPopup').classList.toggle('active');
+    }
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('.info-marker') && !e.target.closest('.info-popup')) {
+        document.getElementById('infoPopup').classList.remove('active');
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Dialogue Trees - Game Mechanics Gallery</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { background: #181a20; color: #f1f1f1; font-family: 'Segoe UI', Arial, sans-serif; margin: 0; }
+    .container { max-width: 500px; margin: 3rem auto; padding: 2rem; background: #23272f; border-radius: 18px; box-shadow: 0 4px 16px rgba(0,0,0,0.15);}
+    h1 { color: #ffcc00; }
+    a { color: #ffcc00; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .info-marker {
+      position: fixed;
+      top: 18px;
+      right: 24px;
+      background: #ffcc00;
+      color: #23272f;
+      border-radius: 50%;
+      width: 38px;
+      height: 38px;
+      font-weight: bold;
+      font-size: 1.3rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+      z-index: 10;
+    }
+    .info-popup {
+      display: none;
+      position: fixed;
+      top: 68px;
+      right: 24px;
+      background: #23272f;
+      color: #f1f1f1;
+      padding: 1rem 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+      width: 300px;
+      max-width: 90vw;
+      z-index: 11;
+    }
+    .info-popup.active { display: block; }
+    .dialogue-box {
+      background: #313645;
+      border-radius: 10px;
+      padding: 1.2rem;
+      margin-bottom: 1rem;
+      min-height: 60px;
+      font-size: 1.1rem;
+    }
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 0.7rem;
+    }
+    .choice-btn {
+      background: #ffcc00;
+      color: #23272f;
+      border: none;
+      border-radius: 6px;
+      padding: 0.6rem 1rem;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .choice-btn:hover { background: #ffe066; }
+  </style>
+</head>
+<body>
+  <a href="index.html" style="position:absolute; left:32px; top:24px; color:#ffcc00;">&larr; Back</a>
+  <div class="info-marker" onclick="toggleInfo()">i</div>
+  <div class="info-popup" id="infoPopup">
+    <strong>Dialogue Trees</strong><br>
+    Dialogue trees let players choose from multiple conversation options when interacting with NPCs. Each choice can lead to different responses, story branches, or outcomes.<br><br>
+    <ul style="margin:0 0 0 1em;">
+      <li>Branching conversations</li>
+      <li>Multiple endings or quest paths</li>
+      <li>Player agency in story progression</li>
+    </ul>
+    <em>Examples: Mass Effect, Fallout, The Witcher 3</em>
+  </div>
+  <div class="container">
+    <h1>Dialogue Trees</h1>
+    <div id="dialogue" class="dialogue-box"></div>
+    <div id="choices" class="choices"></div>
+  </div>
+  <script>
+    // Simple dialogue tree structure
+    const dialogueTree = {
+      start: {
+        text: "Hello, traveler! What brings you to our village?",
+        choices: [
+          { text: "I'm looking for adventure.", next: "adventure" },
+          { text: "Just passing through.", next: "passing" }
+        ]
+      },
+      adventure: {
+        text: "Adventure, you say? We could use help with the goblins in the forest.",
+        choices: [
+          { text: "I'm ready to help!", next: "help" },
+          { text: "Maybe another time.", next: "end" }
+        ]
+      },
+      passing: {
+        text: "Safe travels, then. Beware the roads at night.",
+        choices: [
+          { text: "Thank you!", next: "end" }
+        ]
+      },
+      help: {
+        text: "Thank you! Speak to the guard at the gate for more details.",
+        choices: [
+          { text: "Will do!", next: "end" }
+        ]
+      },
+      end: {
+        text: "The conversation ends.",
+        choices: []
+      }
+    };
+
+    let currentNode = "start";
+    function renderDialogue() {
+      const node = dialogueTree[currentNode];
+      document.getElementById('dialogue').textContent = node.text;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      node.choices.forEach(choice => {
+        const btn = document.createElement('button');
+        btn.textContent = choice.text;
+        btn.className = "choice-btn";
+        btn.onclick = () => {
+          currentNode = choice.next;
+          renderDialogue();
+        };
+        choicesDiv.appendChild(btn);
+      });
+    }
+    renderDialogue();
+
+    function toggleInfo() {
+      document.getElementById('infoPopup').classList.toggle('active');
+    }
+    // Optional: close info popup when clicking outside
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('.info-marker') && !e.target.closest('.info-popup')) {
+        document.getElementById('infoPopup').classList.remove('active');
+      }
+    });
+  </script>
+</body>
+</html>

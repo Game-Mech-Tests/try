@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Crafting - Game Mechanics Gallery</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { background: #181a20; color: #f1f1f1; font-family: 'Segoe UI', Arial, sans-serif; margin: 0; }
+    .container { max-width: 500px; margin: 3rem auto; padding: 2rem; background: #23272f; border-radius: 18px; box-shadow: 0 4px 16px rgba(0,0,0,0.15);}
+    h1 { color: #ffcc00; }
+    a { color: #ffcc00; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .info-marker {
+      position: fixed;
+      top: 18px;
+      right: 24px;
+      background: #ffcc00;
+      color: #23272f;
+      border-radius: 50%;
+      width: 38px;
+      height: 38px;
+      font-weight: bold;
+      font-size: 1.3rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+      z-index: 10;
+    }
+    .info-popup {
+      display: none;
+      position: fixed;
+      top: 68px;
+      right: 24px;
+      background: #23272f;
+      color: #f1f1f1;
+      padding: 1rem 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+      width: 300px;
+      max-width: 90vw;
+      z-index: 11;
+    }
+    .info-popup.active { display: block; }
+    .crafting-area {
+      background: #313645;
+      border-radius: 10px;
+      padding: 1.2rem;
+      margin-bottom: 1rem;
+      min-height: 80px;
+    }
+    .item-btn {
+      background: #ffcc00;
+      color: #23272f;
+      border: none;
+      border-radius: 6px;
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      margin-right: 0.7rem;
+      margin-bottom: 0.7rem;
+      transition: background 0.15s;
+    }
+    .item-btn:hover { background: #ffe066; }
+    .crafted {
+      color: #7ecfff;
+      font-weight: bold;
+      margin-top: 1rem;
+      font-size: 1.1rem;
+    }
+  </style>
+</head>
+<body>
+  <a href="index.html" style="position:absolute; left:32px; top:24px; color:#ffcc00;">&larr; Back</a>
+  <div class="info-marker" onclick="toggleInfo()">i</div>
+  <div class="info-popup" id="infoPopup">
+    <strong>Crafting</strong><br>
+    Crafting lets players combine items or resources to create new items. Recipes define which items are needed for each craft.<br><br>
+    <ul style="margin:0 0 0 1em;">
+      <li>Combining ingredients</li>
+      <li>Discovering or unlocking recipes</li>
+      <li>Resource management</li>
+    </ul>
+    <em>Examples: Minecraft, Terraria, Stardew Valley</em>
+  </div>
+  <div class="container">
+    <h1>Crafting</h1>
+    <div class="crafting-area" id="craftingArea">
+      <strong>Inventory:</strong>
+      <div id="inv"></div>
+      <div style="margin-top:1rem;">
+        <strong>Recipes:</strong><br>
+        <button class="item-btn" onclick="craft('Sword')">Sword (Wood + Iron)</button>
+        <button class="item-btn" onclick="craft('Potion')">Potion (Herb + Water)</button>
+      </div>
+      <div class="crafted" id="craftedMsg"></div>
+    </div>
+    <button class="item-btn" style="background:#7ecfff;" onclick="addRandomItem()">Add Random Ingredient</button>
+    <div style="margin-top:1rem; color:#ffe066; font-size:1rem;">Click a recipe to craft if you have the ingredients.</div>
+  </div>
+  <script>
+    let inventory = [];
+    const allItems = ["Wood", "Iron", "Herb", "Water"];
+    const recipes = {
+      "Sword": ["Wood", "Iron"],
+      "Potion": ["Herb", "Water"]
+    };
+
+    function renderInv() {
+      const invDiv = document.getElementById('inv');
+      if (inventory.length === 0) {
+        invDiv.innerHTML = '<span style="color:#888;">(Empty)</span>';
+      } else {
+        invDiv.innerHTML = inventory.map(i => `<span style="background:#ffcc00;color:#23272f;border-radius:4px;padding:0.2em 0.6em;margin-right:0.5em;">${i}</span>`).join('');
+      }
+    }
+
+    function addRandomItem() {
+      if (inventory.length >= 8) return alert("Inventory full!");
+      const item = allItems[Math.floor(Math.random() * allItems.length)];
+      inventory.push(item);
+      renderInv();
+      document.getElementById('craftedMsg').textContent = '';
+    }
+
+    function craft(item) {
+      const needed = recipes[item];
+      if (needed.every(i => inventory.includes(i))) {
+        needed.forEach(i => inventory.splice(inventory.indexOf(i), 1));
+        inventory.push(item);
+        renderInv();
+        document.getElementById('craftedMsg').textContent = `You crafted a ${item}!`;
+      } else {
+        document.getElementById('craftedMsg').textContent = `Missing ingredients for ${item}.`;
+      }
+    }
+
+    renderInv();
+
+    function toggleInfo() {
+      document.getElementById('infoPopup').classList.toggle('active');
+    }
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('.info-marker') && !e.target.closest('.info-popup')) {
+        document.getElementById('infoPopup').classList.remove('active');
+      }
+    });
+  </script>
+</body>
+</html>

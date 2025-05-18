@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Loot Drops - Game Mechanics Gallery</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { background: #181a20; color: #f1f1f1; font-family: 'Segoe UI', Arial, sans-serif; margin: 0; }
+    .container { max-width: 500px; margin: 3rem auto; padding: 2rem; background: #23272f; border-radius: 18px; box-shadow: 0 4px 16px rgba(0,0,0,0.15);}
+    h1 { color: #ffcc00; }
+    a { color: #ffcc00; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .info-marker {
+      position: fixed;
+      top: 18px;
+      right: 24px;
+      background: #ffcc00;
+      color: #23272f;
+      border-radius: 50%;
+      width: 38px;
+      height: 38px;
+      font-weight: bold;
+      font-size: 1.3rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+      z-index: 10;
+    }
+    .info-popup {
+      display: none;
+      position: fixed;
+      top: 68px;
+      right: 24px;
+      background: #23272f;
+      color: #f1f1f1;
+      padding: 1rem 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+      width: 300px;
+      max-width: 90vw;
+      z-index: 11;
+    }
+    .info-popup.active { display: block; }
+    .enemy-box {
+      background: #313645;
+      border-radius: 10px;
+      padding: 1.2rem;
+      margin-bottom: 1rem;
+      min-height: 80px;
+      text-align: center;
+    }
+    .loot-btn {
+      background: #ffcc00;
+      color: #23272f;
+      border: none;
+      border-radius: 6px;
+      padding: 0.7rem 1.5rem;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      margin-bottom: 1rem;
+      transition: background 0.15s;
+    }
+    .loot-btn:hover { background: #ffe066; }
+    .loot-list {
+      margin-top: 1rem;
+      background: #252830;
+      border-radius: 8px;
+      padding: 0.8rem 1rem;
+      font-size: 1rem;
+      min-height: 40px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5em;
+      justify-content: center;
+    }
+    .loot-item {
+      background: #7ecfff;
+      color: #23272f;
+      border-radius: 4px;
+      padding: 0.2em 0.6em;
+      font-weight: bold;
+      position: relative;
+      margin-right: 0.5em;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3em;
+    }
+    .percent-btn {
+      background: #ffcc00;
+      color: #23272f;
+      border: none;
+      border-radius: 50%;
+      width: 1.5em;
+      height: 1.5em;
+      font-size: 0.9em;
+      font-weight: bold;
+      cursor: pointer;
+      margin-left: 0.2em;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    .percent-tooltip {
+      display: none;
+      position: absolute;
+      bottom: 125%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #23272f;
+      color: #ffcc00;
+      padding: 0.4em 0.7em;
+      border-radius: 6px;
+      font-size: 0.95em;
+      white-space: nowrap;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+      z-index: 20;
+      pointer-events: none;
+    }
+    .percent-btn:hover + .percent-tooltip,
+    .percent-btn:focus + .percent-tooltip,
+    .percent-tooltip.show {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <a href="index.html" style="position:absolute; left:32px; top:24px; color:#ffcc00;">&larr; Back</a>
+  <div class="info-marker" onclick="toggleInfo()">i</div>
+  <div class="info-popup" id="infoPopup">
+    <strong>Loot Drops</strong><br>
+    Loot drops are items or rewards that appear when an enemy is defeated or a container is opened. The items are often randomized based on rarity or drop rates.<br><br>
+    <ul style="margin:0 0 0 1em;">
+      <li>Randomized item drops</li>
+      <li>Rarity and drop rates</li>
+      <li>Encourages replay and exploration</li>
+    </ul>
+    <em>Examples: Diablo, Borderlands, Destiny</em>
+  </div>
+  <div class="container">
+    <h1>Loot Drops</h1>
+    <div class="enemy-box">
+      <strong>Defeat the Goblin!</strong><br>
+      <button class="loot-btn" onclick="dropLoot()">Defeat Enemy</button>
+      <div class="loot-list" id="lootList"></div>
+    </div>
+    <div style="color:#ffe066; font-size:1rem;">Click "Defeat Enemy" to see what loot drops! Hover or click the % for drop chance.</div>
+  </div>
+  <script>
+    const lootTable = [
+      { item: "Gold Coin", chance: 0.5 },
+      { item: "Iron Sword", chance: 0.2 },
+      { item: "Potion", chance: 0.15 },
+      { item: "Rare Gem", chance: 0.05 },
+      { item: "Goblin Ear", chance: 0.1 }
+    ];
+
+    function dropLoot() {
+      let loot = [];
+      lootTable.forEach(entry => {
+        if (Math.random() < entry.chance) loot.push(entry.item);
+      });
+      if (loot.length === 0) loot.push("Nothing...");
+      renderLootList(loot);
+    }
+
+    function renderLootList(loot) {
+      const lootListDiv = document.getElementById('lootList');
+      lootListDiv.innerHTML = '';
+      loot.forEach(name => {
+        const entry = lootTable.find(l => l.item === name);
+        const div = document.createElement('div');
+        div.className = 'loot-item';
+        div.textContent = name;
+
+        if (entry) {
+          // Add % button and tooltip
+          const percentBtn = document.createElement('button');
+          percentBtn.className = 'percent-btn';
+          percentBtn.textContent = '%';
+          percentBtn.tabIndex = 0;
+
+          const tooltip = document.createElement('span');
+          tooltip.className = 'percent-tooltip';
+          tooltip.textContent = (entry.chance * 100).toFixed(0) + '% chance';
+
+          // Show tooltip on hover/focus/click
+          percentBtn.addEventListener('mouseenter', () => tooltip.style.display = 'block');
+          percentBtn.addEventListener('mouseleave', () => tooltip.style.display = 'none');
+          percentBtn.addEventListener('focus', () => tooltip.style.display = 'block');
+          percentBtn.addEventListener('blur', () => tooltip.style.display = 'none');
+          percentBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            tooltip.classList.toggle('show');
+            setTimeout(() => tooltip.classList.remove('show'), 1800);
+          });
+
+          div.appendChild(percentBtn);
+          div.appendChild(tooltip);
+        }
+        lootListDiv.appendChild(div);
+      });
+    }
+
+    function toggleInfo() {
+      document.getElementById('infoPopup').classList.toggle('active');
+    }
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('.info-marker') && !e.target.closest('.info-popup')) {
+        document.getElementById('infoPopup').classList.remove('active');
+      }
+    });
+  </script>
+</body>
+</html>

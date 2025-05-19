@@ -1,218 +1,289 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Loot Drops - Game Mechanics Gallery</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    body { background: #181a20; color: #f1f1f1; font-family: 'Segoe UI', Arial, sans-serif; margin: 0; }
-    .container { max-width: 500px; margin: 3rem auto; padding: 2rem; background: #23272f; border-radius: 18px; box-shadow: 0 4px 16px rgba(0,0,0,0.15);}
-    h1 { color: #ffcc00; }
-    a { color: #ffcc00; text-decoration: none; }
-    a:hover { text-decoration: underline; }
-    .info-marker {
-      position: fixed;
-      top: 18px;
-      right: 24px;
-      background: #ffcc00;
-      color: #23272f;
-      border-radius: 50%;
-      width: 38px;
-      height: 38px;
-      font-weight: bold;
-      font-size: 1.3rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.18);
-      z-index: 10;
-    }
-    .info-popup {
-      display: none;
-      position: fixed;
-      top: 68px;
-      right: 24px;
-      background: #23272f;
+    body {
+      background: #181a20;
       color: #f1f1f1;
-      padding: 1rem 1.5rem;
-      border-radius: 12px;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.25);
-      width: 300px;
-      max-width: 90vw;
-      z-index: 11;
+      font-family: 'Comic Sans MS', 'Comic Sans', Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      overflow-x: hidden;
     }
-    .info-popup.active { display: block; }
-    .enemy-box {
-      background: #313645;
-      border-radius: 10px;
-      padding: 1.2rem;
-      margin-bottom: 1rem;
-      min-height: 80px;
+    .container {
+      max-width: 400px;
+      margin: 4rem auto 0 auto;
+      padding: 2rem;
+      background: #23272f;
+      border-radius: 18px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
       text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+    h1 {
+      color: #ffcc00;
+      margin-bottom: 1.2rem;
     }
     .loot-btn {
       background: #ffcc00;
       color: #23272f;
       border: none;
-      border-radius: 6px;
-      padding: 0.7rem 1.5rem;
-      font-size: 1rem;
-      font-weight: bold;
-      cursor: pointer;
-      margin-bottom: 1rem;
-      transition: background 0.15s;
-    }
-    .loot-btn:hover { background: #ffe066; }
-    .loot-list {
-      margin-top: 1rem;
-      background: #252830;
       border-radius: 8px;
-      padding: 0.8rem 1rem;
-      font-size: 1rem;
-      min-height: 40px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5em;
-      justify-content: center;
-    }
-    .loot-item {
-      background: #7ecfff;
-      color: #23272f;
-      border-radius: 4px;
-      padding: 0.2em 0.6em;
-      font-weight: bold;
-      position: relative;
-      margin-right: 0.5em;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.3em;
-    }
-    .percent-btn {
-      background: #ffcc00;
-      color: #23272f;
-      border: none;
-      border-radius: 50%;
-      width: 1.5em;
-      height: 1.5em;
-      font-size: 0.9em;
+      padding: 0.8rem 2rem;
+      font-size: 1.15rem;
       font-weight: bold;
       cursor: pointer;
-      margin-left: 0.2em;
-      display: inline-flex;
+      transition: background 0.15s;
+      margin-bottom: 1.5rem;
+      margin-top: 1rem;
+    }
+    .loot-btn:hover {
+      background: #ffe066;
+    }
+    .loot-result {
+      font-size: 1.25rem;
+      margin-top: 1.5rem;
+      min-height: 3.5rem;
+      color: #ffe066;
+      font-weight: bold;
+      position: relative;
+      z-index: 2;
+      min-height: 120px;
+      display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
-      position: relative;
     }
-    .percent-tooltip {
-      display: none;
-      position: absolute;
-      bottom: 125%;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #23272f;
-      color: #ffcc00;
-      padding: 0.4em 0.7em;
-      border-radius: 6px;
-      font-size: 0.95em;
-      white-space: nowrap;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.18);
-      z-index: 20;
+    .tyler-cinematic {
+      color: #ff6ec7;
+      font-size: 2.2rem;
+      letter-spacing: 2px;
+      text-shadow: 0 0 18px #ffcc00, 0 0 8px #7ecfff;
+      display: inline-block;
+      border-radius: 24px;
+      padding: 1.2rem 1.5rem 1.5rem 1.5rem;
+      border: 4px dashed #ffcc00;
+      box-shadow: 0 0 40px 0px #ffcc00cc, 0 0 12px #7ecfff;
+      background: linear-gradient(120deg, #ffe066 0%, #ffcc00 50%, #ff6ec7 100%);
+      font-family: 'Comic Sans MS', 'Comic Sans', Arial, sans-serif;
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+      opacity: 0;
+      transform: scale(0.7) rotate(-8deg);
+      animation: cardPop 0.7s 1.1s cubic-bezier(.5,1.8,.5,1.0) forwards;
+    }
+    @keyframes cardPop {
+      0%   { opacity: 0; transform: scale(0.7) rotate(-8deg);}
+      70%  { opacity: 1; transform: scale(1.13) rotate(3deg);}
+      100% { opacity: 1; transform: scale(1) rotate(0deg);}
+    }
+    .burst {
       pointer-events: none;
+      position: absolute;
+      left: 50%; top: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 10;
+      width: 320px;
+      height: 320px;
+      opacity: 0.85;
+      animation: burstIn 0.5s cubic-bezier(.5,1.8,.5,1.0), burstOut 0.7s 0.7s cubic-bezier(.5,1.8,.5,1.0) forwards;
     }
-    .percent-btn:hover + .percent-tooltip,
-    .percent-btn:focus + .percent-tooltip,
-    .percent-tooltip.show {
+    @keyframes burstIn {
+      0% { transform: translate(-50%, -50%) scale(0.2) rotate(-40deg);}
+      80% { transform: translate(-50%, -50%) scale(1.1) rotate(20deg);}
+      100% { transform: translate(-50%, -50%) scale(1) rotate(0deg);}
+    }
+    @keyframes burstOut {
+      0% { opacity: 0.85; transform: translate(-50%, -50%) scale(1) rotate(0deg);}
+      40% { opacity: 1; }
+      100% { opacity: 0; transform: translate(-50%, -50%) scale(0.1) rotate(540deg);}
+    }
+    .burst svg {
+      width: 100%;
+      height: 100%;
       display: block;
+    }
+    .item-card {
+      padding: 1.1rem 1.2rem 1.3rem 1.2rem;
+      border-radius: 18px;
+      background: #292e38;
+      border: 2.5px solid #ffe066;
+      color: #ffe066;
+      font-size: 1.25rem;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      margin-top: 1.2rem;
+      box-shadow: 0 2px 16px #ffcc0040;
+      min-width: 180px;
+      display: inline-block;
+      animation: itemPop 0.5s cubic-bezier(.5,1.8,.5,1.0);
+    }
+    @keyframes itemPop {
+      0% { opacity: 0; transform: scale(0.7) rotate(-6deg);}
+      80% { opacity: 1; transform: scale(1.1) rotate(4deg);}
+      100% { opacity: 1; transform: scale(1) rotate(0deg);}
+    }
+    .common { border-color: #bfbfbf; color: #bfbfbf; }
+    .rare { border-color: #7ecfff; color: #7ecfff; }
+    .epic { border-color: #ff6ec7; color: #ff6ec7; }
+    .legendary { border-color: #ffe066; color: #ffe066; }
+    .tyler { border-color: #ff6ec7; color: #ff6ec7; font-family: 'Comic Sans MS', 'Comic Sans', cursive; }
+    .item-label {
+      font-size: 0.98rem;
+      margin-top: 0.7rem;
+      color: #bfbfbf;
+      letter-spacing: 1px;
+      font-family: 'Segoe UI', Arial, sans-serif;
+    }
+    /* Grainy film overlay */
+    #grain {
+      pointer-events: none;
+      z-index: 999;
+      position: fixed;
+      left: 0; top: 0;
+      width: 100vw; height: 100vh;
+      opacity: 0;
+      mix-blend-mode: lighten;
+      background-image:
+        url('https://grainy-gradients.vercel.app/noise.svg');
+      background-size: cover;
+      animation: grainFadeIn 1.3s cubic-bezier(.5,1.8,.5,1.0) forwards;
+    }
+    @keyframes grainFadeIn {
+      0% { opacity: 0; }
+      80% { opacity: 0.5; }
+      100% { opacity: 0.25; }
+    }
+    /* Flash explosion overlay */
+    #flash {
+      position: fixed;
+      left: 0; top: 0;
+      width: 100vw; height: 100vh;
+      background: white;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 998;
+      transition: opacity 0.18s;
+    }
+    #flash.active {
+      opacity: 1;
+      transition: opacity 0.09s;
     }
   </style>
 </head>
 <body>
-  <a href="index.html" style="position:absolute; left:32px; top:24px; color:#ffcc00;">&larr; Back</a>
-  <div class="info-marker" onclick="toggleInfo()">i</div>
-  <div class="info-popup" id="infoPopup">
-    <strong>Loot Drops</strong><br>
-    Loot drops are items or rewards that appear when an enemy is defeated or a container is opened. The items are often randomized based on rarity or drop rates.<br><br>
-    <ul style="margin:0 0 0 1em;">
-      <li>Randomized item drops</li>
-      <li>Rarity and drop rates</li>
-      <li>Encourages replay and exploration</li>
-    </ul>
-    <em>Examples: Diablo, Borderlands, Destiny</em>
-  </div>
+  <div id="flash"></div>
+  <div id="grain"></div>
   <div class="container">
-    <h1>Loot Drops</h1>
-    <div class="enemy-box">
-      <strong>Defeat the Goblin!</strong><br>
-      <button class="loot-btn" onclick="dropLoot()">Defeat Enemy</button>
-      <div class="loot-list" id="lootList"></div>
+    <h1>Loot Drops Demo</h1>
+    <button class="loot-btn" id="dropBtn">Open Loot!</button>
+    <div class="loot-result" id="lootResult"></div>
+    <div style="margin-top:2rem;font-size:0.98rem;color:#bfbfbf;">
+      <b>Drop Rates:</b><br>
+      <span style="color:#bfbfbf;">Common: 60%</span><br>
+      <span style="color:#7ecfff;">Rare: 25%</span><br>
+      <span style="color:#ff6ec7;">Epic: 10%</span><br>
+      <span style="color:#ffe066;">Legendary: 4.95%</span><br>
+      <span style="color:#ff6ec7;">Tyler, The Creator: 0.05%</span>
     </div>
-    <div style="color:#ffe066; font-size:1rem;">Click "Defeat Enemy" to see what loot drops! Hover or click the % for drop chance.</div>
   </div>
   <script>
+    // Loot table with all items and rarities
     const lootTable = [
-      { item: "Gold Coin", chance: 0.5 },
-      { item: "Iron Sword", chance: 0.2 },
-      { item: "Potion", chance: 0.15 },
-      { item: "Rare Gem", chance: 0.05 },
-      { item: "Goblin Ear", chance: 0.1 }
+      { name: "Common Sword",      rarity: "common",    weight: 60 },
+      { name: "Rare Shield",       rarity: "rare",      weight: 25 },
+      { name: "Epic Potion",       rarity: "epic",      weight: 10 },
+      { name: "Legendary Gem",     rarity: "legendary", weight: 4.95 },
+      { name: "Tyler, The Creator",rarity: "tyler",     weight: 0.05 }
     ];
-
-    function dropLoot() {
-      let loot = [];
-      lootTable.forEach(entry => {
-        if (Math.random() < entry.chance) loot.push(entry.item);
-      });
-      if (loot.length === 0) loot.push("Nothing...");
-      renderLootList(loot);
-    }
-
-    function renderLootList(loot) {
-      const lootListDiv = document.getElementById('lootList');
-      lootListDiv.innerHTML = '';
-      loot.forEach(name => {
-        const entry = lootTable.find(l => l.item === name);
-        const div = document.createElement('div');
-        div.className = 'loot-item';
-        div.textContent = name;
-
-        if (entry) {
-          // Add % button and tooltip
-          const percentBtn = document.createElement('button');
-          percentBtn.className = 'percent-btn';
-          percentBtn.textContent = '%';
-          percentBtn.tabIndex = 0;
-
-          const tooltip = document.createElement('span');
-          tooltip.className = 'percent-tooltip';
-          tooltip.textContent = (entry.chance * 100).toFixed(0) + '% chance';
-
-          // Show tooltip on hover/focus/click
-          percentBtn.addEventListener('mouseenter', () => tooltip.style.display = 'block');
-          percentBtn.addEventListener('mouseleave', () => tooltip.style.display = 'none');
-          percentBtn.addEventListener('focus', () => tooltip.style.display = 'block');
-          percentBtn.addEventListener('blur', () => tooltip.style.display = 'none');
-          percentBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            tooltip.classList.toggle('show');
-            setTimeout(() => tooltip.classList.remove('show'), 1800);
-          });
-
-          div.appendChild(percentBtn);
-          div.appendChild(tooltip);
-        }
-        lootListDiv.appendChild(div);
-      });
-    }
-
-    function toggleInfo() {
-      document.getElementById('infoPopup').classList.toggle('active');
-    }
-    document.addEventListener('click', function(e) {
-      if (!e.target.closest('.info-marker') && !e.target.closest('.info-popup')) {
-        document.getElementById('infoPopup').classList.remove('active');
-      }
+    let cumulative = [];
+    let sum = 0;
+    lootTable.forEach(item => {
+      sum += item.weight;
+      cumulative.push(sum);
     });
+
+    function getRandomLoot() {
+      const roll = Math.random() * sum; // sum should be 100
+      for (let i = 0; i < cumulative.length; i++) {
+        if (roll < cumulative[i]) {
+          return lootTable[i];
+        }
+      }
+      return lootTable[lootTable.length - 1];
+    }
+
+    function showTylerLoot() {
+      // Flash explosion
+      const flash = document.getElementById('flash');
+      flash.classList.add('active');
+      setTimeout(() => {
+        flash.classList.remove('active');
+      }, 140);
+
+      // Grain overlay
+      const grain = document.getElementById('grain');
+      grain.style.opacity = 0;
+      grain.style.display = "block";
+      setTimeout(() => { grain.style.opacity = 0.25; }, 80);
+
+      // Burst SVG (retro starburst, pastel colors)
+      const burstSVG = `
+        <svg viewBox="0 0 320 320">
+          <g>
+            <polygon fill="#ffcc00" points="160,30 185,120 290,100 200,160 290,220 185,200 160,290 135,200 30,220 120,160 30,100 135,120"/>
+            <polygon fill="#ff6ec7" opacity="0.7" points="160,60 180,120 250,110 190,160 250,210 180,200 160,260 140,200 70,210 130,160 70,110 140,120"/>
+            <polygon fill="#7ecfff" opacity="0.6" points="160,90 175,120 210,120 180,150 210,180 175,180 160,210 145,180 110,180 140,150 110,120 145,120"/>
+          </g>
+        </svg>
+      `;
+
+      const lootResult = document.getElementById('lootResult');
+      lootResult.innerHTML = `
+        <div class="burst" id="burstStar">${burstSVG}</div>
+        <span class="tyler-cinematic" id="tylerCard" style="opacity:0;"> 
+          <span style="font-size:2.7rem;vertical-align:middle;">★</span>
+          <span style="font-family:'Comic Sans MS',cursive;">TYLER, THE CREATOR</span>
+          <span style="font-size:2.7rem;vertical-align:middle;">★</span>
+          <br>
+          <span style="font-size:1.2rem;display:block;margin-top:0.5rem;color:#fffbe8;letter-spacing:2px;">ULTRA RARE!</span>
+        </span>
+      `;
+
+      // Show Tyler card after star burst disappears
+      setTimeout(() => {
+        document.getElementById('tylerCard').style.opacity = 1;
+      }, 1200);
+
+      // Remove grain after a few seconds
+      setTimeout(() => { grain.style.opacity = 0; }, 2200);
+    }
+
+    function showNormalLoot(item) {
+      const lootResult = document.getElementById('lootResult');
+      lootResult.innerHTML = `
+        <div class="item-card ${item.rarity}">
+          ${item.name}
+          <div class="item-label">${item.rarity.charAt(0).toUpperCase() + item.rarity.slice(1)}</div>
+        </div>
+      `;
+    }
+
+    document.getElementById('dropBtn').onclick = function() {
+      const item = getRandomLoot();
+      if (item.rarity === "tyler") {
+        showTylerLoot();
+      } else {
+        // Remove any old overlays
+        document.getElementById('grain').style.opacity = 0;
+        document.getElementById('flash').classList.remove('active');
+        showNormalLoot(item);
+      }
+    };
   </script>
 </body>
 </html>
